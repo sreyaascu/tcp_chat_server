@@ -22,7 +22,7 @@ func readKeyBoard(conn net.Conn) {
 	for scanner.Scan() {
 		msg = scanner.Text()
 		conn.Write([]byte(msg + "\n"))
-		if msg == "stop" {
+		if msg == "/quit" {
 			return
 		}
 	}
