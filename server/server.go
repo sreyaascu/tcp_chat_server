@@ -24,6 +24,13 @@ func listUsers(conn net.Conn) {
 	}
 }
 
+func showFunctions(conn net.Conn) {
+	conn.Write([]byte("Chat Controls:\n"))
+	conn.Write([]byte("/help - show chat commands\n"))
+	conn.Write([]byte("/list - list members in the server\n"))
+	conn.Write([]byte("/quit - disconnect from the server\n"))
+}
+
 func removeClient(conn net.Conn) {
 	mu.Lock()
 	defer mu.Unlock()
@@ -53,12 +60,16 @@ func handleClient(conn net.Conn) {
 			fmt.Printf("%s joined the chat\n", username)
 			continue
 		}
-		if strings.TrimSpace(msg) == "stop" {
+		if strings.TrimSpace(msg) == "/quit" {
 			removeClient(conn)
 			return
 		}
 		if strings.TrimSpace(msg) == "/list" {
 			listUsers(conn)
+			continue
+		}
+		if strings.TrimSpace(msg) == "/help" {
+			showFunctions(conn)
 			continue
 		}
 		prefix = username + ": " + msg
