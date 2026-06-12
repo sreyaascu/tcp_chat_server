@@ -11,6 +11,12 @@ import (
 var clients = make(map[net.Conn]string)
 var mu sync.Mutex
 
+func renameUser(name string, conn net.Conn) {
+	mu.Lock()
+	defer mu.Unlock()
+	clients[conn] = name
+}
+
 func listUsers(conn net.Conn) {
 	mu.Lock()
 	names := make([]string, 0, len(clients))
@@ -70,6 +76,12 @@ func handleClient(conn net.Conn) {
 		}
 		if strings.TrimSpace(msg) == "/help" {
 			showFunctions(conn)
+			continue
+		}
+		parts := strings.Fields(msg)
+		if len(parts) >= 2 && parts[0] == "/name" {
+			newName := parts[1]
+			renameUser(newName, conn)
 			continue
 		}
 		prefix = username + ": " + msg
